@@ -101,7 +101,7 @@ if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['
 
 ## Sell Condition
 -  sell_signal is used to block sell too early. But in some scenario it will also stop the selling when the market is down.
-((sell_signal is True and current price is grater than the cost*1.1) OR (sell_signal is False and current price is grater than the cost*1.1))  AND (5 minutes 'CCI' is greater than 100) AND (1 day 'Close' is grater than 'BOLLINGER_HBAND') AND (cryptocurrency size is not ZERO)
+((sell_signal is True and current price is grater than the cost * 1.1) OR (sell_signal is False and current price is grater than the cost * 1.1))  AND (5 minutes 'CCI' is greater than 100) AND (1 day 'Close' is grater than 'BOLLINGER_HBAND') AND (cryptocurrency size is not ZERO)
 ```
 if ((sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate) or (not sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simulation_data['CCI'].iloc[-1] > 100 and long_term_simulation_data['Close'].iloc[-1] > long_term_simulation_data['BOLLINGER_HBAND'].iloc[-1])) and currency_cost[1] != 0:
 ```
