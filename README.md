@@ -57,7 +57,7 @@ order_start_date = '2021-02-01'
 -  api_key - CoinBase Pro API key generated in the CoinBase Pro API SETTINGS page. Recommend to only generate "View/Trade" permissions API KEY and use the "IP Whitelist" to block all unauthorised access.
 -  secret_key - CoinBase Pro secret key generated in the CoinBase Pro API SETTINGS page.
 -  passphrase - CoinBase Pro passphrase generated in the CoinBase Pro API SETTINGS page.
--  screen_width and screen_height - only used for [cryptocurrency_trading_simulator.py] (https://github.com/banhao/cryptocurrency_trading_simulator)
+-  screen_width and screen_height - only used for [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator)
 -  Long_Term_Indicator_days - The maximum number is 300, CoinBase only supply 300 records. if "granularity" is 86400 then CoinBase will return 300 days data.
 -  Long_Term_Indicator_days_granularity - 86400 is 1 day, 21600 is 6 hours, 3600 is 1 hour, 900 is 15 minutes, 300 is 5 minutes, 60 is 1 minute.
 -  Short_Term_Indicator_days - The maximum number is 300, CoinBase only supply 300 records. if "granularity" is 300 then CoinBase will return 1 days and 1 hour data.
@@ -72,8 +72,8 @@ order_start_date = '2021-02-01'
 -  third_buy_percent - The percent of money when buy a cryptocurrency at third time. Calculate by USDC.
 -  exclude_currency - The cryptocurrencies you don't want to trade such as stablecoins.
 -  include_currency - The cryptocurrencies you want to trade. If it is blank, the cryptocurrency products are depend on CoinBase. 
--  output_data_file - only used for [cryptocurrency_trading_simulator.py] (https://github.com/banhao/cryptocurrency_trading_simulator). Export indicators into this file.
--  close_plot_second - only used for [cryptocurrency_trading_simulator.py] (https://github.com/banhao/cryptocurrency_trading_simulator).
+-  output_data_file - only used for [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator). Export indicators into this file.
+-  close_plot_second - only used for [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator).
 -  order_start_date - The start date you want the program to grab history orders.
 
 
@@ -106,7 +106,7 @@ if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['
 if ((sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate) or (not sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simulation_data['CCI'].iloc[-1] > 100 and long_term_simulation_data['Close'].iloc[-1] > long_term_simulation_data['BOLLINGER_HBAND'].iloc[-1])) and currency_cost[1] != 0:
 ```
 
-### You also can build your own trade conditions and use [cryptocurrency_trading_simulator.py] (https://github.com/banhao/cryptocurrency_trading_simulator) to do the simulate. I'm still trying to figure out how to easyly create trade conditions and share between [CoinBasePro_Trade_Bot.py] (https://github.com/banhao/coinbasepro_trade_bot) and [cryptocurrency_trading_simulator.py] (https://github.com/banhao/cryptocurrency_trading_simulator)
+### You also can build your own trade conditions and use [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator) to do the simulate. I'm still trying to figure out how to easyly create trade conditions and share between [CoinBasePro_Trade_Bot](https://github.com/banhao/coinbasepro_trade_bot) and [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator)
 
 
 ## Support the Project
