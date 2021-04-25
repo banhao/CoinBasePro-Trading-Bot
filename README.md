@@ -16,6 +16,7 @@ Under no circumstances will I be held responsible or liable in any way for any c
 ------------------------------------------------------------------------
 
 ## CoinBase Pro Setup
+
 ..* Create a [CoinBase account](https://www.coinbase.com/join/ban_c) (Includes my referral link, I'll be super grateful if you use it).
 ..* Enable Two-factor Authentication.
 ..* Go to [pro.coinbase.com](https://pro.coinbase.com) to generate a new API key in the CoinBase Pro "API SETTINGS" page. Recommend to only generate "View/Trade" permissions API KEY and use the "IP Whitelist" to block all unauthorised access.
