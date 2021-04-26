@@ -122,5 +122,6 @@ if ((sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate) or 
 
 
 ## Support the Project
-If this program helped you to earn money from cryptocurrency market, wish you can use the following link to buy me a cuo of coffee, Thanks! 
+If this program helped you to earn money from cryptocurrency market, wish you can use the following link to buy me a cup of coffee, Thanks! 
+
 [PayPal.Me](https://paypal.me/HAOBAN99?locale.x=en_US)
