@@ -24,6 +24,18 @@ Under no circumstances will I be held responsible or liable in any way for any c
 -  Recommended only to send BTC or USDC into your account. Because in this program BTC and USDC are anchor cryptocurrencies. If you send other cryptocurrencies into your account but without history orders, so the program can't sell it because of no cost. 
 
 
+## Linux environment
+- Start program
+```
+$nohup ./startCBP.sh >/dev/null 2>&1 & echo $! > run.pid
+$tail -f output.txt
+```
+- Stop program
+```
+$./stopCBP.sh
+```
+
+
 ## variable.py
 ```
 #Initial Parameters
