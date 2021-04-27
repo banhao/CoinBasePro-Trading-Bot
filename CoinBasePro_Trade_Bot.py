@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 # Author: banhao@gmail.com
-# Version: 4.5.2
-# Issue Date: April 20, 2021
-# Release Note: 
+# Version: 4.6.0
+# Issue Date: April 27, 2021
+# Release Note: CoinBase API had 500 Internal Server Error on April 27, 2021. So add the exception code to handle it.
 
-import json, hmac, hashlib, time, requests, base64, collections, statistics
+
+import json, hmac, hashlib, time, requests, base64, collections, statistics, os
 from requests.auth import AuthBase
 from datetime import datetime, timedelta, date
 from tqdm import tqdm
@@ -50,11 +51,28 @@ class CoinbaseExchangeAuth(AuthBase):
         return request
 
 
+def Error(responsecode):
+    if responsecode == 500:
+        print(responsecode, "Internal Server Error -- We had a problem with our server",  file=open("output.txt", "a"))
+    if responsecode == 400:
+        print(responsecode, "Bad Request -- Invalid request format",  file=open("output.txt", "a"))
+    if responsecode == 401 :
+        print(responsecode, "Unauthorized -- Invalid API Key",  file=open("output.txt", "a"))
+    if responsecode == 403 :
+        print(responsecode, "Forbidden -- You do not have access to the requested resource",  file=open("output.txt", "a"))
+    if responsecode == 404 :
+        print(responsecode, "Not Found",  file=open("output.txt", "a"))
+    os.kill(os.getpid(), 9)
+
 def available_BTC_USDC():
     global BTC_balance, BTC_available, BTC_value, BTC_USD_Price, current_property, USDC_balance, USDC_available
     current_property = requests.get(api_url + 'accounts', auth=auth)
+    if current_property.status_code != 200:
+        Error(current_property.status_code)
     time.sleep(1)
     current_ticker = requests.get(api_url + 'products/BTC-USDC/ticker', auth=auth)
+    if current_ticker.status_code != 200:
+        Error(current_ticker.status_code)
     time.sleep(1)
     BTC_USD_Price = float(current_ticker.json()['price'])
     for item in current_property.json():
@@ -77,6 +95,8 @@ def calculate_cost(id, Merge = False):
         currency = id.split("-")[0]
         order_list = []
         done_orders = requests.get(api_url + 'orders?status=done&product_id='+currency+'-BTC', auth=auth)
+        if done_orders.status_code != 200:
+            Error(done_orders.status_code)
         time.sleep(1)
         for _item in done_orders.json():
             if _item['created_at'].split("T")[0] >= order_start_date:
@@ -85,6 +105,8 @@ def calculate_cost(id, Merge = False):
                 else:
                     order_list.append( [_item['product_id'], _item['side'], float(_item['filled_size']), float(_item['price']), _item['created_at']] )
         done_orders = requests.get(api_url + 'orders?status=done&product_id='+currency+'-USDC', auth=auth)
+        if done_orders.status_code != 200:
+            Error(done_orders.status_code)
         time.sleep(1)
         for _item in done_orders.json():
             if _item['created_at'].split("T")[0] >= order_start_date:
@@ -96,6 +118,8 @@ def calculate_cost(id, Merge = False):
     else:
         order_list = []
         done_orders = requests.get(api_url + 'orders?status=done&product_id='+id, auth=auth)
+        if done_orders.status_code != 200:
+            Error(done_orders.status_code)
         time.sleep(1)
         for _item in done_orders.json(): # Generate order_list
             if _item['side'] == 'sell' and _item['created_at'].split("T")[0] >= order_start_date:
@@ -109,6 +133,8 @@ def calculate_cost(id, Merge = False):
                 else:
                     order_list.append( [id, "buy", float(_item['filled_size']), float(_item['price'])] )
     current_product = requests.get(api_url + 'products/'+id, auth=auth)
+    if current_product.status_code != 200:
+        Error(current_product.status_code)
     time.sleep(1)
     value = 0.00000000
     size = 0.00000000
@@ -129,6 +155,8 @@ def calculate_cost(id, Merge = False):
         cost = float(value)/float(size)
         id = order_list[0][0]
         current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+        if current_ticker.status_code != 200:
+            Error(current_ticker.status_code)
         time.sleep(1)
         last_trade_price = float(current_ticker.json()['price'])
         profit_and_loss = (last_trade_price-cost)/cost*100
@@ -145,6 +173,8 @@ def get_current_property():
             total_value = total_value + float(item['balance'])*float(BTC_USD_Price)
             total_BTC = total_BTC + BTC_balance
             current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+            if current_ticker.status_code != 200:
+                Error(current_ticker.status_code)
             time.sleep(1)
             currency_cost = calculate_cost(id)
             print('%6s' % item['currency'], '%20s' % item['balance'], "| equal BTC number:", '%23s' % item['balance'], "BTC | equal USD value:", '%8s' % str(format(float(item['balance'])*float(current_ticker.json()['price']), '.2f')), "USD", "| order cost:" , '%23s' % currency_cost[0], "USD | order size:", '%15s' % format(float(item['balance']), '.6f'), " | ", '%23s' % currency_cost[2], file=open("output.txt", "a"))
@@ -160,6 +190,8 @@ def get_current_property():
                     if currency_cost[1] != 0:
                         hold_list.append([item['currency'], id, currency_cost[1]])
                     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+                    if current_ticker.status_code != 200:
+                        Error(current_ticker.status_code)
                     time.sleep(1)
                     print('%6s' % item['currency'], '%20s' % item['balance'], "| equal BTC number:", '%23s' % str(float(item['balance'])*float(current_ticker.json()['price'])/float(BTC_USD_Price)), "BTC | equal USD value:", '%8s' % str(format(float(item['balance'])*float(current_ticker.json()['price']), '.2f')), "USD", "| order cost:" , '%23s' % currency_cost[0], "USD | order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%23s' % currency_cost[2], file=open("output.txt", "a"))
                     total_value = total_value + float(currency_cost[1])*float(current_ticker.json()['price'])
@@ -168,6 +200,8 @@ def get_current_property():
                     id = item['currency']+'-BTC'
                     currency_cost = calculate_cost(id)
                     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+                    if current_ticker.status_code != 200:
+                        Error(current_ticker.status_code)
                     time.sleep(1)
                     print('%6s' % item['currency'], '%20s' % item['balance'], "| equal BTC number:", '%23s' % str(float(item['balance'])*float(current_ticker.json()['price'])), "BTC | equal USD value:", '%8s' % str(format(float(item['balance'])*float(current_ticker.json()['price'])*float(BTC_USD_Price), '.2f')), "USD", "| order cost:" , '%23s' % currency_cost[0], "BTC | order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%23s' % currency_cost[2], file=open("output.txt", "a"))
                     total_value = total_value + float(currency_cost[1])*float(current_ticker.json()['price'])*float(BTC_USD_Price)
@@ -177,6 +211,8 @@ def get_current_property():
                 elif (item['currency'] in USDC_currency_list):
                     id = item['currency']+'-USDC'
                     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+                    if current_ticker.status_code != 200:
+                        Error(current_ticker.status_code)
                     time.sleep(1)
                     currency_cost = calculate_cost(id)
                     hold_list.append([item['currency'], id, currency_cost[1]])
@@ -186,6 +222,8 @@ def get_current_property():
                 else:
                     id = item['currency']+'-BTC'
                     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+                    if current_ticker.status_code != 200:
+                        Error(current_ticker.status_code)
                     time.sleep(1)
                     currency_cost = calculate_cost(id)
                     hold_list.append([item['currency'], id, currency_cost[1]])
@@ -203,6 +241,8 @@ def min_max_price(Long_Term_Indicator_days, id):
     high_price_list = []
     sell_sign_list = []
     regress_history_data_price = requests.get(api_url + 'products/'+id+'/candles?start='+start_datetime+'&end='+end_datetime+'&granularity='+str(Long_Term_Indicator_days_granularity), auth=auth)
+    if regress_history_data_price.status_code != 200:
+        Error(regress_history_data_price.status_code)
     time.sleep(2)
     if regress_history_data_price.json():
         for i in range(len(regress_history_data_price.json())):
@@ -223,10 +263,14 @@ def min_max_price(Long_Term_Indicator_days, id):
 def Short_Term_Indicator(Short_Term_Indicator_days, id):
     global df,short_term_simulation_data
     current_datetime = requests.get(api_url + 'time', auth=auth)
+    if current_datetime.status_code != 200:
+        Error(current_datetime.status_code)
     time.sleep(2)
     start_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']-86400*Short_Term_Indicator_days).__format__('%Y-%m-%d %H:%M:%S')
     end_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']).__format__('%Y-%m-%d %H:%M:%S')
     regress_history_data_price = requests.get(api_url + 'products/'+id+'/candles?start='+start_datetime+'&end='+end_datetime+'&granularity='+str(Short_Term_Indicator_days_granularity), auth=auth)
+    if regress_history_data_price.status_code != 200:
+        Error(regress_history_data_price.status_code)
     time.sleep(1)
     df = regress_history_data_price.json()
     df.reverse()
@@ -274,10 +318,14 @@ def Short_Term_Indicator(Short_Term_Indicator_days, id):
 def Long_Term_Indicator(Long_Term_Indicator_days, id):
     global df,long_term_simulation_data
     current_datetime = requests.get(api_url + 'time', auth=auth)
+    if current_datetime.status_code != 200:
+        Error(current_datetime.status_code)
     time.sleep(2)
     start_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']-86400*Long_Term_Indicator_days).__format__('%Y-%m-%d %H:%M:%S')
     end_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']).__format__('%Y-%m-%d %H:%M:%S')
     regress_history_data_price = requests.get(api_url + 'products/'+id+'/candles?start='+start_datetime+'&end='+end_datetime+'&granularity='+str(Long_Term_Indicator_days_granularity), auth=auth)
+    if regress_history_data_price.status_code != 200:
+        Error(regress_history_data_price.status_code)
     time.sleep(1)
     df = regress_history_data_price.json()
     df.reverse()
@@ -326,8 +374,12 @@ def buy_currency(id):
     in_hold_list = False
     order_size = 0
     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+    if current_ticker.status_code != 200:
+        Error(current_ticker.status_code)
     time.sleep(1)
     current_product = requests.get(api_url + 'products/'+id, auth=auth)
+    if current_product.status_code != 200:
+        Error(current_product.status_code)
     time.sleep(1)
     base_min_size = float(current_product.json()['base_min_size'])
     last_trade_price = float(current_ticker.json()['price'])
@@ -338,6 +390,8 @@ def buy_currency(id):
     if in_hold_list:
         order_list = []
         done_orders = requests.get(api_url + 'orders?status=done&product_id='+id, auth=auth)
+        if done_orders.status_code != 200:
+            Error(done_orders.status_code)
         time.sleep(1)
         for _item in done_orders.json(): # Generate order_list
             if _item['side'] == 'sell' and _item['created_at'].split("T")[0] >= order_start_date:
@@ -381,6 +435,8 @@ def buy_currency(id):
                         }
                 print(order, file=open("output.txt", "a"))
                 request_order = requests.post(api_url + 'orders', json=order, auth=auth)
+                if request_order.status_code != 200:
+                    Error(request_order.status_code)
                 time.sleep(1)
                 print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
                 time.sleep(seconds_cancel_order)
@@ -399,6 +455,8 @@ def buy_currency(id):
                         }
                 print(order, file=open("output.txt", "a"))
                 request_order = requests.post(api_url + 'orders', json=order, auth=auth)
+                if request_order.status_code != 200:
+                    Error(request_order.status_code)
                 time.sleep(1)
                 print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
                 time.sleep(seconds_cancel_order)
@@ -419,6 +477,8 @@ def buy_currency(id):
                     }
             print(order, file=open("output.txt", "a"))
             request_order = requests.post(api_url + 'orders', json=order, auth=auth)
+            if request_order.status_code != 200:
+                Error(request_order.status_code)
             time.sleep(1)
             print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
             time.sleep(seconds_cancel_order)
@@ -431,25 +491,31 @@ def sell_currency(id):
         if id == min_max_list[i][0]:
             sell_signal = min_max_list[i][6]
     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
+    if current_ticker.status_code != 200:
+        Error(current_ticker.status_code)
     time.sleep(1)
     Short_Term_Indicator(Short_Term_Indicator_days, id)
     Long_Term_Indicator(Long_Term_Indicator_days, id)
     last_trade_price = float(current_ticker.json()['price'])
     if ((sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate) or (not sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simulation_data['CCI'].iloc[-1] > 100 and long_term_simulation_data['Close'].iloc[-1] > long_term_simulation_data['BOLLINGER_HBAND'].iloc[-1])) and currency_cost[1] != 0:
         order = {
-                'size': currency_cost[1],
+                'size': format(float(currency_cost[1]), '.6f'),
                 'price': last_trade_price,
                 'side': 'sell',
                 'product_id': id,
                 }
         print(order, file=open("output.txt", "a"))
         request_order = requests.post(api_url + 'orders', json=order, auth=auth)
+        if request_order.status_code != 200:
+            Error(request_order.status_code)
         print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
         time.sleep(seconds_cancel_order)
 
 
 def cancel_order():
     open_orders = requests.get(api_url + 'orders?status=open', auth=auth)
+    if open_orders.status_code != 200:
+        Error(open_orders.status_code)
     time.sleep(1)
     for item in open_orders.json():
         if item['side'] == 'sell':
@@ -460,6 +526,8 @@ def cancel_order():
         order_created_at = datetime.strptime(str(item['created_at']),'%Y-%m-%dT%H:%M:%S.%fZ')+timedelta(seconds=seconds_cancel_order)
         if (datetime.strptime(str(current_datetime.json()['iso']),'%Y-%m-%dT%H:%M:%S.%fZ')) > order_created_at:
             cancel_order = requests.delete(api_url + 'orders/'+item['id'], auth=auth)
+            if cancel_order.status_code != 200:
+                Error(cancel_order.status_code)
             time.sleep(1)
             print("Cancel Order: ", json.dumps(cancel_order.json(), indent=4), file=open("output.txt", "a"))
 
@@ -476,6 +544,8 @@ while True:
     BTC_currency_list = []
     min_max_list = []
     current_datetime = requests.get(api_url + 'time', auth=auth)
+    if current_datetime.status_code != 200:
+        Error(current_datetime.status_code)
     time.sleep(1)
     start_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']-86400*Long_Term_Indicator_days).__format__('%Y-%m-%d %H:%M:%S')
     end_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']).__format__('%Y-%m-%d %H:%M:%S')
@@ -483,6 +553,8 @@ while True:
     print("Current local date time(CST): ", datetime.utcfromtimestamp(current_datetime.json()['epoch']+seconds_UTC2local).__format__('%Y-%m-%d %H:%M:%S'), file=open("output.txt", "a"))
     print("Start Date(UTC) : ",start_datetime,"   End Date(UTC) : ", end_datetime, file=open("output.txt", "a"))
     coinbase_products = requests.get(api_url + 'products', auth=auth)
+    if coinbase_products.status_code != 200:
+        Error(coinbase_products.status_code)
     time.sleep(1)
     if len(include_currency) != 0:
         for _item in include_currency:
