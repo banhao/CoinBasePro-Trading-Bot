@@ -1,4 +1,8 @@
+# CoinBase Pro Trade Bot
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+
 CoinBasePro_Trade_Botr.py can trade cryptocurrencies automatically by using CoinBasePro API.
+
 <img src="/screenshot/01.jpg">
 
 ## Disclaimer
