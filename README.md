@@ -3,6 +3,10 @@
 
 CoinBasePro_Trade_Botr.py can trade cryptocurrencies automatically by using CoinBasePro API.
 
+### Version: 4.7.0
+### Issue Date: May 04, 2021
+### Release Note: optimize the code, remove redundancy code. Custome quote currency list that can support ETH, USDT, DAI as anchor cryptocurrencies.
+
 <img src="/screenshot/01.jpg">
 
 ## Disclaimer
@@ -58,11 +62,11 @@ Short_Term_Indicator_days_granularity = 300 #{60, 300, 900, 3600, 21600, 86400}
 seconds_UTC2local = -25200
 profit_rate = 1.10
 seconds_cancel_order = 60
-BTC_lower_limit = 100
-USDC_lower_limit = 100
 first_buy_percent = 0.10
 second_buy_percent = 0.20
 third_buy_percent = 0.30
+quote_currency = ["BTC","USDC","ETH","USDT"]
+quote_lower_limit = {'BTC':100, 'USDC':100, 'ETH':10, 'USDT':10}
 exclude_currency = ["XRP-BTC","DAI-USDC","WBTC-BTC"] # "exclude_currency" and "include_currency" only one can have items or both empty
 include_currency = [] # "exclude_currency" and "include_currency" only one can have items or both empty
 output_data_file = 'output_data.txt'
@@ -81,11 +85,11 @@ order_start_date = '2021-02-01'
 -  seconds_UTC2local - Seconds between your local time and UTC.
 -  profit_rate - Define how much you want to earn, if buy price is $10, then when the price is "greater than or equal to" $11 the sell action will be triggered.
 -  seconds_cancel_order - If Transaction doesn't match after seconds the order will be cancelled.
--  BTC_lower_limit - How much BitCoin your want to keep and don't want to input into Transaction, the number is BTC convert to USDC.
--  USDC_lower_limit - How much USDC your want to keep and don't want to input into Transaction.
 -  first_buy_percent - The percent of money when buy a cryptocurrency at first time. Calculate by USDC.
 -  second_buy_percent - The percent of money when buy a cryptocurrency at second time. Calculate by USDC.
 -  third_buy_percent - The percent of money when buy a cryptocurrency at third time. Calculate by USDC.
+-  quote_currency - Define anchor cryptocurrencies, current CoinBase Pro support BTC, USDT, USDC, DAI, ETH
+-  quote_lower_limit - Define how much anchor cryptocurrencies your want to keep in account and don't want to input into Transaction. Calculate by USDC
 -  exclude_currency - The cryptocurrencies you don't want to trade such as stablecoins.
 -  include_currency - The cryptocurrencies you want to trade. If it is blank, the cryptocurrency products are depend on CoinBase. 
 -  output_data_file - only used for [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator). Export indicators into this file.
