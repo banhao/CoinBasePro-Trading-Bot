@@ -2,10 +2,14 @@
 
 """
 Author: banhao@gmail.com
-Version: 4.7.0
+Version: 4.7.1
+
+Issue Date: May 08,2021
+Release Note: variable.py add variable "seconds_pause_request", can custom the sleep time after each requests, less than 0.5 may exceed API rate limits. 
 
 Issue Date: May 04, 2021
 Release Note: optimize the code, remove redundancy code. Custome quote currency list that can support ETH, USDT, DAI as anchor cryptocurrencies.
+
 Issue Date: April 27, 2021
 Release Note: CoinBase API had 500 Internal Server Error on April 27, 2021. So add the exception code to handle it.
 """
@@ -75,18 +79,18 @@ def available_quote_currency():
     current_property = requests.get(api_url + 'accounts', auth=auth)
     if current_property.status_code != 200:
         Error(current_property.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     BTC_USDC_ticker = requests.get(api_url + 'products/BTC-USDC/ticker', auth=auth)
     if BTC_USDC_ticker.status_code != 200:
         Error(BTC_USDC_ticker.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     BTC_USD_Price = float(BTC_USDC_ticker.json()['price'])
     for item in current_property.json():
         if item['currency'] in quote_currency and item['currency'] != 'USDC':
             current_ticker = requests.get(api_url + 'products/' + item['currency'] + '-USDC/ticker', auth=auth)
             if current_ticker.status_code != 200:
                 Error(current_ticker.status_code)
-            time.sleep(0.3)
+            time.sleep(seconds_pause_request)
             if float(item['available']) != 0:
                 quote_currency_USD_Price = float(current_ticker.json()['price'])
                 quote_currency_balance = float(item['balance'])
@@ -109,7 +113,7 @@ def calculate_cost(id):
     done_orders = requests.get(api_url + 'orders?status=done&product_id='+id, auth=auth)
     if done_orders.status_code != 200:
         Error(done_orders.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     for _item in done_orders.json(): # Generate order_list
         if _item['side'] == 'sell' and _item['created_at'].split("T")[0] >= order_start_date:
             if _item['type'] == 'market':
@@ -142,7 +146,7 @@ def calculate_cost(id):
         current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
         if current_ticker.status_code != 200:
             Error(current_ticker.status_code)
-        time.sleep(0.3)
+        time.sleep(seconds_pause_request)
         last_trade_price = float(current_ticker.json()['price'])
         profit_and_loss = (last_trade_price-cost)/cost*100
     return(cost, size, profit_and_loss)
@@ -160,10 +164,11 @@ def get_current_property():
                 if id in products_list:
                     currency_cost = calculate_cost(id)
                     if currency_cost[1] != 0:
+#                        hold_list.append([item['currency'], id, currency_cost[1], item['balance']])
                         current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
                         if current_ticker.status_code != 200:
                             Error(current_ticker.status_code)
-                        time.sleep(0.3)
+                        time.sleep(seconds_pause_request)
                         if _item == "USDC":
                             if float(item['balance']) < float(currency_cost[1]):
                                 total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])
@@ -175,7 +180,7 @@ def get_current_property():
                             quote_currency_ticker = requests.get(api_url + 'products/' + _item + '-USDC/ticker', auth=auth)
                             if quote_currency_ticker.status_code != 200:
                                 Error(quote_currency_ticker.status_code)
-                            time.sleep(0.3)
+                            time.sleep(seconds_pause_request)
                             if float(item['balance']) < float(currency_cost[1]):
                                 total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
                                 print('%4s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%4s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
@@ -225,7 +230,7 @@ def Short_Term_Indicator(Short_Term_Indicator_days, id):
     regress_history_data_price = requests.get(api_url + 'products/'+id+'/candles?start='+start_datetime+'&end='+end_datetime+'&granularity='+str(Short_Term_Indicator_days_granularity), auth=auth)
     if regress_history_data_price.status_code != 200:
         Error(regress_history_data_price.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     df = regress_history_data_price.json()
     df.reverse()
     labels = ['Date', 'Low', 'High', 'Open', 'Close', 'Volume']
@@ -280,7 +285,7 @@ def Long_Term_Indicator(Long_Term_Indicator_days, id):
     regress_history_data_price = requests.get(api_url + 'products/'+id+'/candles?start='+start_datetime+'&end='+end_datetime+'&granularity='+str(Long_Term_Indicator_days_granularity), auth=auth)
     if regress_history_data_price.status_code != 200:
         Error(regress_history_data_price.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     df = regress_history_data_price.json()
     df.reverse()
     labels = ['Date', 'Low', 'High', 'Open', 'Close', 'Volume']
@@ -330,15 +335,17 @@ def buy_currency(id, currency, available_balance):
     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
     if current_ticker.status_code != 200:
         Error(current_ticker.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     current_product = requests.get(api_url + 'products/'+id, auth=auth)
     if current_product.status_code != 200:
         Error(current_product.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     base_min_size = float(current_product.json()['base_min_size'])
     last_trade_price = float(current_ticker.json()['price'])
     for item in current_property.json(): # When already hold this currency
         if currency == item['currency'] and float(item['balance']) > 0:
+#    for i in range(len(hold_list)): # When already hold this currency
+#        if id == hold_list[i][1]:
             print(id, "is in the HOLD LIST", file=open("output.txt", "a"))
             in_hold_list = True
     if in_hold_list:
@@ -346,7 +353,7 @@ def buy_currency(id, currency, available_balance):
         done_orders = requests.get(api_url + 'orders?status=done&product_id='+id, auth=auth)
         if done_orders.status_code != 200:
             Error(done_orders.status_code)
-        time.sleep(0.3)
+        time.sleep(seconds_pause_request)
         for _item in done_orders.json(): # Generate order_list
             if _item['side'] == 'sell' and _item['created_at'].split("T")[0] >= order_start_date:
                 if _item['type'] == 'market':
@@ -379,7 +386,7 @@ def buy_currency(id, currency, available_balance):
             Short_Term_Indicator(Short_Term_Indicator_days, id)
             Long_Term_Indicator(Long_Term_Indicator_days, id)
             if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100:
-                print("Holding the currency", id, "price is less than the minimum price *", 1-third_buy_percent, file=open("output.txt", "a"))
+                print("Holding the currency", id, "price is less than the minimum price*", 1-third_buy_percent, file=open("output.txt", "a"))
                 order_size = int(available_balance*third_buy_percent/last_trade_price*(1/base_min_size))/(1/base_min_size)
                 order = {
                         'size': order_size,
@@ -391,7 +398,7 @@ def buy_currency(id, currency, available_balance):
                 request_order = requests.post(api_url + 'orders', json=order, auth=auth)
                 if request_order.status_code != 200:
                     Error(request_order.status_code)
-                time.sleep(0.3)
+                time.sleep(seconds_pause_request)
                 print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
                 time.sleep(seconds_cancel_order)
                 available_quote_currency()
@@ -399,7 +406,7 @@ def buy_currency(id, currency, available_balance):
             Short_Term_Indicator(Short_Term_Indicator_days, id)
             Long_Term_Indicator(Long_Term_Indicator_days, id)
             if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100:
-                print("Holding the currency", id, "price is less than the minimum price *", 1-second_buy_percent, file=open("output.txt", "a"))
+                print("Holding the currency", id, "price is less than the minimum price*", 1-second_buy_percent, file=open("output.txt", "a"))
                 order_size = int(available_balance*second_buy_percent/last_trade_price*(1/base_min_size))/(1/base_min_size)
                 order = {
                         'size': order_size,
@@ -411,12 +418,12 @@ def buy_currency(id, currency, available_balance):
                 request_order = requests.post(api_url + 'orders', json=order, auth=auth)
                 if request_order.status_code != 200:
                     Error(request_order.status_code)
-                time.sleep(0.3)
+                time.sleep(seconds_pause_request)
                 print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
                 time.sleep(seconds_cancel_order)
                 available_quote_currency()
         else:
-            print("Holding the currency", id, "price is NOT less than the minimum price *",1-second_buy_percent, file=open("output.txt", "a"))
+            print("Holding the currency", id, "price is NOT less than the minimum price*",1-second_buy_percent, file=open("output.txt", "a"))
     elif not in_hold_list:
         Short_Term_Indicator(Short_Term_Indicator_days, id)
         Long_Term_Indicator(Long_Term_Indicator_days, id)
@@ -433,7 +440,7 @@ def buy_currency(id, currency, available_balance):
             request_order = requests.post(api_url + 'orders', json=order, auth=auth)
             if request_order.status_code != 200:
                 Error(request_order.status_code)
-            time.sleep(0.3)
+            time.sleep(seconds_pause_request)
             print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
             time.sleep(seconds_cancel_order)
             available_quote_currency()
@@ -441,10 +448,13 @@ def buy_currency(id, currency, available_balance):
 
 def sell_currency(id, balance):
     currency_cost = calculate_cost(id)
+#    for i in range(len(min_max_list)):
+#        if id == min_max_list[i][0]:
+#            sell_signal = min_max_list[i][6]
     current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
     if current_ticker.status_code != 200:
         Error(current_ticker.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     Short_Term_Indicator(Short_Term_Indicator_days, id)
     Long_Term_Indicator(Long_Term_Indicator_days, id)
     last_trade_price = float(current_ticker.json()['price'])
@@ -471,7 +481,7 @@ def cancel_order():
     open_orders = requests.get(api_url + 'orders?status=open', auth=auth)
     if open_orders.status_code != 200:
         Error(open_orders.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     for item in open_orders.json():
         if item['side'] == 'sell':
             print("Open Order - Sell: ", item['product_id'], item['size'], "| price: ", float(item['price'])*float(item['size']), "BTC | value: ", format(float(item['price'])*float(item['size'])*float(BTC_USD_Price), '.2f'), "USD", file=open("output.txt", "a"))
@@ -483,7 +493,7 @@ def cancel_order():
             cancel_order = requests.delete(api_url + 'orders/'+item['id'], auth=auth)
             if cancel_order.status_code != 200:
                 Error(cancel_order.status_code)
-            time.sleep(0.3)
+            time.sleep(seconds_pause_request)
             print("Cancel Order: ", json.dumps(cancel_order.json(), indent=4), file=open("output.txt", "a"))
 
 
@@ -491,13 +501,14 @@ api_url = 'https://api.pro.coinbase.com/'
 auth = CoinbaseExchangeAuth(api_key, secret_key, passphrase)
 while True:
     global order_list, products_list, min_max_list, coinbase_products
+#    hold_list = []
     order_list = []
     products_list = []
     min_max_list = []
     current_datetime = requests.get(api_url + 'time', auth=auth)
     if current_datetime.status_code != 200:
         Error(current_datetime.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     start_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']-86400*Long_Term_Indicator_days).__format__('%Y-%m-%d %H:%M:%S')
     end_datetime = datetime.utcfromtimestamp(current_datetime.json()['epoch']).__format__('%Y-%m-%d %H:%M:%S')
     print('============================================================================================================================================', file=open("output.txt", "a"))
@@ -506,7 +517,7 @@ while True:
     coinbase_products = requests.get(api_url + 'products', auth=auth)
     if coinbase_products.status_code != 200:
         Error(coinbase_products.status_code)
-    time.sleep(0.3)
+    time.sleep(seconds_pause_request)
     if len(include_currency) != 0:
         for _item in include_currency:
             products_list.append(_item)
@@ -527,5 +538,10 @@ while True:
                     elif (quote_currency_list[i][0] == _item) and (float(quote_currency_list[i][4]) < float(quote_lower_limit[_item])):
                         print('Available ' + _item + ' is less than the ' + _item + ' Lower Limit for buying ', id, file=open("output.txt", "a"))
     print('--------------------------------------------------------------------------------------------------------------------------------------------', file=open("output.txt", "a"))
+#    for i in range(len(hold_list)):
+#        id = hold_list[i][1]
+#        balance = float(hold_list[i][3])
+#        sell_currency(id, balance)
+#    time.sleep(seconds_cancel_order)
     cancel_order()
 

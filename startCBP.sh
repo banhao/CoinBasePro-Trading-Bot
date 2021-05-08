@@ -6,5 +6,5 @@ do
 	if [ -z $_PROCESS ]; then
 		python3 -B CoinBasePro.py & echo $! >> run.pid
 	fi
-	sleep 900
+	sleep 600
 done
