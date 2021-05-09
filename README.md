@@ -3,9 +3,9 @@
 
 CoinBasePro_Trade_Botr.py can trade cryptocurrencies automatically by using CoinBasePro API.
 
-### Version: 4.7.0
-### Issue Date: May 04, 2021
-### Release Note: optimize the code, remove redundancy code. Custome quote currency list that can support ETH, USDT, DAI as anchor cryptocurrencies.
+### Version: 4.7.1
+### Issue Date: May 08, 2021
+### Release Note: variable.py add variable "seconds_pause_request", can custom the sleep time after each requests, less than 0.5 may exceed API rate limits.
 
 <img src="/screenshot/01.jpg">
 
@@ -61,6 +61,7 @@ Short_Term_Indicator_days = 1
 Short_Term_Indicator_days_granularity = 300 #{60, 300, 900, 3600, 21600, 86400}
 seconds_UTC2local = -25200
 profit_rate = 1.10
+seconds_pause_request = 0.5
 seconds_cancel_order = 60
 first_buy_percent = 0.10
 second_buy_percent = 0.20
@@ -84,6 +85,7 @@ order_start_date = '2021-02-01'
 -  Short_Term_Indicator_days_granularity - 86400 is 1 day, 21600 is 6 hours, 3600 is 1 hour, 900 is 15 minutes, 300 is 5 minutes, 60 is 1 minute.
 -  seconds_UTC2local - Seconds between your local time and UTC.
 -  profit_rate - Define how much you want to earn, if buy price is $10, then when the price is "greater than or equal to" $11 the sell action will be triggered.
+-  seconds_pause_request - Custom the sleep time after each requests, less than 0.5 may exceed API rate limits.
 -  seconds_cancel_order - If Transaction doesn't match after seconds the order will be cancelled.
 -  first_buy_percent - The percent of money when buy a cryptocurrency at first time. Calculate by USDC.
 -  second_buy_percent - The percent of money when buy a cryptocurrency at second time. Calculate by USDC.
@@ -120,10 +122,9 @@ if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['
 
 
 ## Sell Condition
--  sell_signal is used to block sell too early. But in some scenario it will also stop the selling when the market is down.
-((sell_signal is True and current price is grater than the cost * 1.1) OR (sell_signal is False and current price is grater than the cost * 1.1))  AND (5 minutes 'CCI' is greater than 100) AND (1 day 'Close' is grater than 'BOLLINGER_HBAND') AND (cryptocurrency size is not ZERO)
+- (current price is grater than the cost * 1.1) AND (5 minutes 'CCI' is greater than 100) AND (1 day 'Close' is grater than 'BOLLINGER_HBAND') AND (cryptocurrency size is not ZERO)
 ```
-if ((sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate) or (not sell_signal and float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simulation_data['CCI'].iloc[-1] > 100 and long_term_simulation_data['Close'].iloc[-1] > long_term_simulation_data['BOLLINGER_HBAND'].iloc[-1])) and currency_cost[1] != 0:
+if float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simulation_data['CCI'].iloc[-1] > 100 and long_term_simulation_data['Close'].iloc[-1] > long_term_simulation_data['BOLLINGER_HBAND'].iloc[-1] and currency_cost[1] != 0:
 ```
 
 ### You also can build your own trade conditions and use [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator) to do the simulate. I'm still trying to figure out how to easyly create trade conditions and share between [CoinBasePro_Trade_Bot](https://github.com/banhao/coinbasepro_trade_bot) and [cryptocurrency_trading_simulator](https://github.com/banhao/cryptocurrency_trading_simulator)
