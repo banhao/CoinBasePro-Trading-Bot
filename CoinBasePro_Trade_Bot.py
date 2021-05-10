@@ -2,7 +2,10 @@
 
 """
 Author: banhao@gmail.com
-Version: 4.7.1
+Version: 4.7.2
+
+Issue Date: May 09,2021
+Release Note: fix calculate the Total Value miscalculation. 
 
 Issue Date: May 08,2021
 Release Note: variable.py add variable "seconds_pause_request", can custom the sleep time after each requests, less than 0.5 may exceed API rate limits. 
@@ -174,7 +177,7 @@ def get_current_property():
                                 total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])
                                 print('%4s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%4s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(item['balance'])*float(current_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                             else:
-                                total_value = total_value + float(currency_cost[1])*float(current_ticker.json()['price'])
+                                total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])
                                 print('%4s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%4s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(currency_cost[1])*float(current_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                         else:
                             quote_currency_ticker = requests.get(api_url + 'products/' + _item + '-USDC/ticker', auth=auth)
@@ -185,7 +188,7 @@ def get_current_property():
                                 total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
                                 print('%4s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%4s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                             else:
-                                total_value = total_value + float(currency_cost[1])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
+                                total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
                                 print('%4s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%4s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(currency_cost[1])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                         if float(currency_cost[2]) > 10:
                             sell_currency(id, item['balance'])
