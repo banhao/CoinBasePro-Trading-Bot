@@ -3,9 +3,9 @@
 
 CoinBasePro_Trade_Botr.py can trade cryptocurrencies automatically by using CoinBasePro API.
 
-### Version: 4.7.1
-### Issue Date: May 08, 2021
-### Release Note: variable.py add variable "seconds_pause_request", can custom the sleep time after each requests, less than 0.5 may exceed API rate limits.
+### Version: 4.7.2
+### Issue Date: May 09, 2021
+### Release Note: fix calculate the Total Value miscalculation.
 
 <img src="/screenshot/01.jpg">
 
