@@ -5,7 +5,7 @@ CoinBasePro_Trade_Botr.py can trade cryptocurrencies automatically by using Coin
 
 ### Version: 4.7.2
 ### Issue Date: May 09, 2021
-### Release Note: fix calculate the Total Value miscalculation.
+### Release Note: fix the miscalculation of the "Total Value".
 
 <img src="/screenshot/01.jpg">
 
