@@ -29,7 +29,7 @@ Under no circumstances will I be held responsible or liable in any way for any c
 -  Enable Two-factor Authentication.
 -  Go to [pro.coinbase.com](https://pro.coinbase.com) to generate a new API key in the CoinBase Pro "API SETTINGS" page. Recommend to only generate "View/Trade" permissions API KEY and use the "IP Whitelist" to block all unauthorised access.
 -  Buy or Send cryptocurrencies into your account. If you are in Canada, CoinBase doesn't support buy cryptocurrencies from your bank accounts very well. So you can use [shakepay.com](https://shakepay.me/r/ZMLG4KJ) or [bitbuy.ca](https://bitbuy.ca/sign-up?c=G72SCTTHK) (Includes my referral link, I'll be super grateful if you use it).
--  Recommended only to send BTC or USDC into your account. Because in this program BTC and USDC are anchor cryptocurrencies. If you send other cryptocurrencies into your account but without history orders, so the program can't sell it because of no cost. 
+-  Recommended only to send BTC, USDC, ETH, USDT, DAI into your account. Because in this program all these 5 cryptocurrencies can be defined as anchor cryptocurrencies. If you send other cryptocurrencies into your account but without history orders, so the program can't sell it because of no cost. 
 
 
 ## Linux environment
