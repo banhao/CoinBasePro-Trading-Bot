@@ -3,9 +3,9 @@
 
 CoinBasePro_Trade_Botr.py can trade cryptocurrencies automatically by using CoinBasePro API.
 
-### Version: 4.7.2
-### Issue Date: May 09, 2021
-### Release Note: fix the miscalculation of the "Total Value".
+### Version: 4.7.3
+### Issue Date: May 12, 2021
+### Release Note: Change the "quote_currency" buy condition.
 
 <img src="/screenshot/01.jpg">
 
