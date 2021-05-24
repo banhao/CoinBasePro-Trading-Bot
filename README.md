@@ -6,9 +6,9 @@ CoinBasePro_Trade_Botr.py can trade cryptocurrencies automatically by using Coin
 ### *If you think this program is helpful, please give me a star ⭐. If you have any thoughs or advices then submit an Issue or send me an e-mail.*
 :arrow_right:
 
-### Version: 4.7.3
-### Issue Date: May 12, 2021
-### Release Note: Change the "quote_currency" buy condition.
+### Version: 4.8.0
+### Issue Date: May 23, 2021
+### Release Note: Support "AO, KAMA, PPO, PVO, ROC, RSI, STOCHRSI, STOCHOSC, TSI, UO, WILLIAMSR, ADI, CMF, EoM, FI, MFI, NVI, OBV, VPT, VWAP, ATR, BOLLINGER, DONCHIAN, KELTNER, ULCER, ADX, AROON, CCI, DPO, EMA, ICHIMOKU, KST, MACD, MI, PSAR, SMA, STC, TRIX, VI, WMA, CR, DLR" indicators.
 
 <img src="/screenshot/01.jpg">
 
