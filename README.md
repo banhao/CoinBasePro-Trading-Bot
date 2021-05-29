@@ -7,8 +7,8 @@ CoinBasePro Trading Bot can trade cryptocurrencies automatically by using CoinBa
 :arrow_right:
 
 ### Version: 4.8.1
-## Issue Date: May 29,2021
-## Release Note: Fix anchor cryptocurrencies caculate error
+#### Issue Date: May 29,2021
+#### Release Note: Fix anchor cryptocurrencies caculate error
 
 <img src="/screenshot/01.jpg">
 
