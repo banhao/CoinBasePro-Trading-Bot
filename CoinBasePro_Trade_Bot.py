@@ -2,7 +2,10 @@
 
 """
 Author: banhao@gmail.com
-Version: 4.8.0
+Version: 4.8.1
+
+Issue Date: May 29,2021
+Release Note: Fix anchor cryptocurrencies caculate error.
 
 Issue Date: May 23,2021
 Release Note: Support "AO, KAMA, PPO, PVO, ROC, RSI, STOCHRSI, STOCHOSC, TSI, UO, WILLIAMSR, ADI, CMF, EoM, FI, MFI, NVI, OBV, VPT, VWAP, ATR, BOLLINGER, DONCHIAN, KELTNER, ULCER, ADX, AROON, CCI, DPO, EMA, ICHIMOKU, KST, MACD, MI, PSAR, SMA, STC, TRIX, VI, WMA, CR, DLR" indicators.
@@ -11,7 +14,7 @@ Issue Date: May 12,2021
 Release Note: Change the "quote_currency" buy condition.
 
 Issue Date: May 09,2021
-Release Note: fix calculate the Total Value miscalculation. 
+Release Note: Fix calculate the Total Value miscalculation. 
 
 Issue Date: May 08,2021
 Release Note: variable.py add variable "seconds_pause_request", can custom the sleep time after each requests, less than 0.5 may exceed API rate limits. 
@@ -83,7 +86,8 @@ def Error(responsecode):
 
 def available_quote_currency():
     print('--------------------------------------------------------------------------------------------------------------------------------------------', file=open("output.txt", "a"))
-    global BTC_USD_Price, current_property, USDC_balance, USDC_available, quote_currency_list
+    global BTC_USD_Price, current_property, USDC_balance, USDC_available, quote_currency_list, total_value
+    total_value = 0
     quote_currency_list = []
     current_property = requests.get(api_url + 'accounts', auth=auth)
     if current_property.status_code != 200:
@@ -108,13 +112,14 @@ def available_quote_currency():
                 print('%5s' % item['currency'], "Balance: ", '%15s' % format(quote_currency_balance, '.6f'), '%4s' % item['currency'],"| Available USDC: ", '%15s' % quote_currency_value, "| Equal BTC : ", format(quote_currency_value/BTC_USD_Price, '.6f'), file=open("output.txt", "a"))
                 print('--------------------------------------------------------------------------------------------------------------------------------------------', file=open("output.txt", "a"))
                 quote_currency_list.append([item['currency'], quote_currency_USD_Price, quote_currency_balance, quote_currency_available, quote_currency_value])
+                total_value = total_value + quote_currency_value
         elif item['currency'] == 'USDC':
             USDC_balance = float(item['balance'])
             USDC_available = float(item['available'])
             print(" USDC Balance: ", '%15s' % format(USDC_balance, '.6f'), "USDC | Available USDC: ", '%15s' % format(USDC_available, '.2f'), "| Equal BTC : ", format(USDC_available/BTC_USD_Price, '.6f'), file=open("output.txt", "a"))
             print('--------------------------------------------------------------------------------------------------------------------------------------------', file=open("output.txt", "a"))
             quote_currency_list.append([item['currency'], 1, USDC_balance, USDC_available, USDC_available])
-
+            total_value = total_value + USDC_available
 
 
 def calculate_cost(id):
@@ -162,28 +167,27 @@ def calculate_cost(id):
 
 
 def get_current_property():
-    total_value = 0
     available_quote_currency()
+    global total_value
     for item in current_property.json():
-        if item['currency'] == 'USDC':
-            total_value = total_value + float(USDC_balance)
-        elif float(item['balance']) > 0:
+        if float(item['balance']) > 0:
             for _item in quote_currency:
                 id = item['currency'] + "-" + _item
                 if id in products_list:
                     currency_cost = calculate_cost(id)
                     if currency_cost[1] != 0:
-#                        hold_list.append([item['currency'], id, currency_cost[1], item['balance']])
                         current_ticker = requests.get(api_url + 'products/'+id+'/ticker', auth=auth)
                         if current_ticker.status_code != 200:
                             Error(current_ticker.status_code)
                         time.sleep(seconds_pause_request)
                         if _item == "USDC":
                             if float(item['balance']) < float(currency_cost[1]):
-                                total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])
+                                if item['currency'] not in quote_currency:
+                                    total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])
                                 print('%5s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%5s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(item['balance'])*float(current_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                             else:
-                                total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])
+                                if item['currency'] not in quote_currency:
+                                    total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])
                                 print('%5s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%5s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(currency_cost[1])*float(current_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                         else:
                             quote_currency_ticker = requests.get(api_url + 'products/' + _item + '-USDC/ticker', auth=auth)
@@ -191,10 +195,12 @@ def get_current_property():
                                 Error(quote_currency_ticker.status_code)
                             time.sleep(seconds_pause_request)
                             if float(item['balance']) < float(currency_cost[1]):
-                                total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
+                                if item['currency'] not in quote_currency:
+                                    total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
                                 print('%5s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%5s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                             else:
-                                total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
+                                if item['currency'] not in quote_currency:
+                                    total_value = total_value + float(item['balance'])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price'])
                                 print('%5s' % item['currency'], "Balance: ",'%15s' % format(float(item['balance']), '.6f'), '%5s' % item['currency'], "| order cost:" , '%15s' % format(float(currency_cost[0]), '.6f'), '%4s' % _item, "| order size:", '%15s' % format(float(currency_cost[1]), '.6f'), " | ", '%10s' % format(float(currency_cost[2]), '.2f'),"%", " | ", '%15s' % format(float(currency_cost[1])*float(current_ticker.json()['price'])*float(quote_currency_ticker.json()['price']), '.6f'), "USDC", file=open("output.txt", "a"))
                         if float(currency_cost[2]) > 10:
                             sell_currency(id, item['balance'])
