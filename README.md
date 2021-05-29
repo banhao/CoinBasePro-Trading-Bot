@@ -6,9 +6,9 @@ CoinBasePro Trading Bot can trade cryptocurrencies automatically by using CoinBa
 ### *If you think this program is helpful, please give me a star ⭐. If you have any thoughs or advices then submit an Issue or send me an e-mail.*
 :arrow_right:
 
-### Version: 4.8.0
-### Issue Date: May 23, 2021
-### Release Note: Support "AO, KAMA, PPO, PVO, ROC, RSI, STOCHRSI, STOCHOSC, TSI, UO, WILLIAMSR, ADI, CMF, EoM, FI, MFI, NVI, OBV, VPT, VWAP, ATR, BOLLINGER, DONCHIAN, KELTNER, ULCER, ADX, AROON, CCI, DPO, EMA, ICHIMOKU, KST, MACD, MI, PSAR, SMA, STC, TRIX, VI, WMA, CR, DLR" indicators.
+### Version: 4.8.1
+## Issue Date: May 29,2021
+## Release Note: Fix anchor cryptocurrencies caculate error
 
 <img src="/screenshot/01.jpg">
 
