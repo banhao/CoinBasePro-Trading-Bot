@@ -14,6 +14,7 @@ Short_Term_Indicator_days_granularity = 300 #{60, 300, 900, 3600, 21600, 86400}
 seconds_UTC2local = -25200
 profit_rate = 1.10
 seconds_pause_request = 0.5
+skip_indicator_profit_rate = 1.50
 seconds_cancel_order = 60
 first_buy_percent = 0.10
 second_buy_percent = 0.20

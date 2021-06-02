@@ -2,7 +2,10 @@
 
 """
 Author: banhao@gmail.com
-Version: 4.8.1
+Version: 4.8.2
+
+Issue Date: May 31,2021
+Release Note: Add "skip_indicator_profit_rate" parameter that can sell bypass the indicator conditions.
 
 Issue Date: May 29,2021
 Release Note: Fix anchor cryptocurrencies caculate error.
@@ -674,7 +677,7 @@ def sell_currency(id, balance):
         sell_size = float(currency_cost[1])
     elif float(balance) <= float(currency_cost[1]):
         sell_size = float(balance)
-    if float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simulation_data['CCI'].iloc[-1] > 100 and long_term_simulation_data['Close'].iloc[-1] > long_term_simulation_data['BOLLINGER_HBAND'].iloc[-1] and currency_cost[1] != 0:
+    if (( float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simulation_data['CCI'].iloc[-1] > 100 and long_term_simulation_data['Close'].iloc[-1] > long_term_simulation_data['BOLLINGER_HBAND'].iloc[-1] ) or ( float(last_trade_price) > currency_cost[0]*skip_indicator_profit_rate )) and currency_cost[1] != 0:
         order = {
                 'size': sell_size,
                 'price': last_trade_price,
