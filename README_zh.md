@@ -96,7 +96,7 @@ order_start_date = '2021-02-01'
 -  second_buy_percent - 第二次购买，当买入条件满足时使用多少的资金买入加密货币，默认设定为20%，资金按照换算成USDC计算。
 -  third_buy_percent - 第三次购买，当买入条件满足时使用多少的资金买入加密货币，默认设定为30%，资金按照换算成USDC计算。
 -  quote_currency - 锚定货币设定，目前CoinBase Pro支持BTC, USDT, USDC, DAI, ETH等5种货币为锚定货币。
--  quote_lower_limit - 设定锚定货币最低资金限额，当达到该限额后买入行为将会停止，资金按照换算成USDC计算。假如你有相当于1000USDC的比特币在账户里，当设定限额为500时，一旦卖出比特币买入其他加密货币后，比特币的余额小于500USDC时，将不会再有任何卖出比特币买入其他加密货币的交易行为。此参数的目的是为了当有需要保留一部分锚定货币做长期投资打算，而不打算用来做货币对交易时使用。
+-  quote_lower_limit - 设定锚定货币最低资金限额，当达到该限额后买入行为将会停止，资金按照换算成USDC计算。假如你有相当于1000USDC的比特币在账户里，当设定限额为500时，当卖出比特币买入其他加密货币后，比特币的余额小于500USDC时，将不会再有任何卖出比特币买入其他加密货币的交易行为。此参数的目的是为了当有需要保留一部分锚定货币做长期投资打算，而不打算用来做货币对交易时使用。
 -  exclude_currency - 排除的交易货币对，例如某些稳定币
 -  include_currency - 限定只交易某些货币对。如果空白，交易货币对将会是CoinBase所支持的所有货币对。 
 -  output_data_file - 数据输出文件，该参数只被用在本人的另外一个程序中 [CoinBasePro Trading Simulator](https://github.com/banhao/CoinBasePro-Trading-Simulator). Export indicators into this file.
