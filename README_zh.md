@@ -47,7 +47,7 @@ $./stopCBP.sh
 ```
 
 
-## 对variable.py种各个参数的说明
+## 对variable.py中各个参数的说明
 ```
 #Initial Parameters
 import ctypes
