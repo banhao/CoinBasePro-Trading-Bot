@@ -21,7 +21,7 @@ CoinBasePro Trading Bot 通过使用CoinBasePro API来进行加密货币的自�
 
 # 本程序没有设置“止损”功能。 如果你使用杠杆那么在市场震荡情况下你有可能损失你所有的钱。
 
-## Test results:
+## 测试结果:
     Windows10 + Python3.9.1  |  passed
     Linux + Python3.8.5      |  passed
 ------------------------------------------------------------------------
