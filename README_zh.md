@@ -31,7 +31,7 @@ CoinBasePro Trading Bot 通过使用CoinBasePro API来进行加密货币的自�
 -  创建一个CoinBase账户 [CoinBase account](https://www.coinbase.com/join/ban_c) (链接中包含了我的推荐信息，如果你能使用该链接注册，我将不胜感谢).
 -  启用双因素认证。
 -  进入到 [pro.coinbase.com](https://pro.coinbase.com) 进入到CoinBase Pro 的 "API SETTINGS" 页面来创建一个新的API KEY。强烈建议只生成具有”只读/交易“权限的API KEY并启用 "IP Whitelist" 来阻止未授权的访问。
--  购买或转入加密货币到你的账户里。 如果你居住在加拿大CoinBase对通过使用银行账户购买加密货币的支持不太好。你可以通过使用[shakepay.com](https://shakepay.me/r/ZMLG4KJ) 或者 [bitbuy.ca](https://bitbuy.ca/sign-up?c=G72SCTTHK) (链接中包含了我的推荐信息，如果你能使用该链接注册，我将不胜感谢).
+-  购买或转入加密货币到你的账户里。 如果你居住在加拿大CoinBase对通过使用银行账户购买加密货币的支持不太友好。你可以通过使用[shakepay.com](https://shakepay.me/r/ZMLG4KJ) 或者 [bitbuy.ca](https://bitbuy.ca/sign-up?c=G72SCTTHK) (链接中包含了我的推荐信息，如果你能使用该链接注册，我将不胜感谢).
 -  建议只转入BTC, USDC, ETH, USDT, DAI到你的账户里，因为这5种加密货币是锚定货币。如果你转入其他的加密货币由于缺少历史交易记录，程序会因为无法计算出成本而无法进行买卖交易。 
 
 
