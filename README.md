@@ -64,6 +64,7 @@ Short_Term_Indicator_days = 1
 Short_Term_Indicator_days_granularity = 300 #{60, 300, 900, 3600, 21600, 86400}
 seconds_UTC2local = -25200
 profit_rate = 1.10
+skip_indicator_profit_rate = 1.50
 seconds_pause_request = 0.5
 seconds_cancel_order = 60
 first_buy_percent = 0.10
@@ -88,6 +89,7 @@ order_start_date = '2021-02-01'
 -  Short_Term_Indicator_days_granularity - 86400 is 1 day, 21600 is 6 hours, 3600 is 1 hour, 900 is 15 minutes, 300 is 5 minutes, 60 is 1 minute.
 -  seconds_UTC2local - Seconds between your local time and UTC.
 -  profit_rate - Define how much you want to earn, if buy price is $10, then when the price is "greater than or equal to" $11 the sell action will be triggered.
+-  skip_indicator_profit_rate - Define the profit percent that skip the indicators condition and sell directly.
 -  seconds_pause_request - Custom the sleep time after each requests, less than 0.5 may exceed API rate limits.
 -  seconds_cancel_order - If Transaction doesn't match after seconds the order will be cancelled.
 -  first_buy_percent - The percent of money when buy a cryptocurrency at first time. Calculate by USDC.
