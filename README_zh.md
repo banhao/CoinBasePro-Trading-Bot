@@ -105,19 +105,23 @@ order_start_date = '2021-02-01'
 
 
 ## 买入条件
+
 -  初次买入条件
+
 (短期交易指标（默认为5分钟线）为阳线并且收盘价位于布林线下行线的下方 或者 短期交易指标（默认为5分钟线）为阴线并且开盘价位于布林线下行线的下方) 并且  短期交易指标（默认为5分钟线）CCI小于-100 并且 长期交易指标（默认为1天线）最低价位于布林线下行线的下方
 ```
 if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100 and long_term_simulation_data['Low'].iloc[-1] < long_term_simulation_data['BOLLINGER_LBAND'].iloc[-1]:
 ```
 
 -  第二次买入条件
+ 
 (当前价格低于历史成交买入最低交易价格的80%) 并且 (短期交易指标（默认为5分钟线）为阳线并且收盘价位于布林线下行线的下方 或者 短期交易指标（默认为5分钟线）为阴线并且开盘价位于布林线下行线的下方) 并且 短期交易指标（默认为5分钟线）CCI小于-100 
 ```
 if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100:
 ```
 
 -  第三次买入条件
+
 (当前价格低于历史成交买入最低交易价格的70%) 并且 (短期交易指标（默认为5分钟线）为阳线并且收盘价位于布林线下行线的下方 或者 短期交易指标（默认为5分钟线）为阴线并且开盘价位于布林线下行线的下方) 并且 短期交易指标（默认为5分钟线）CCI小于-100
 ```
 if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100:
