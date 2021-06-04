@@ -6,10 +6,6 @@ CoinBasePro Trading Bot can trade cryptocurrencies automatically by using CoinBa
 ### *If you think this program is helpful, please give me a star ⭐. If you have any thoughs or advices then submit an Issue or send me an e-mail.*
 :arrow_right:
 
-### Version: 4.8.2
-#### Issue Date: May 31,2021
-#### Release Note: Add "skip_indicator_profit_rate" parameter that can sell bypass the indicator conditions.
-
 <img src="/screenshot/01.jpg">
 
 ## Disclaimer
