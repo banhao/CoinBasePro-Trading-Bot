@@ -6,10 +6,6 @@ CoinBasePro Trading Bot 通过使用CoinBasePro API来进行加密货币的自�
 ### *如果你觉得这个程序对你有帮助，请给个点赞 ⭐。 如果你有任何的想法或者建议请提交issues或者给我发邮件。*
 :arrow_right:
 
-### Version: 4.8.2
-#### Issue Date: May 31,2021
-#### Release Note: 增加 "skip_indicator_profit_rate" 参数，在达到预设的盈利点后忽略技术指标条件而直接卖出。
-
 <img src="/screenshot/01.jpg">
 
 ## 免责申明
