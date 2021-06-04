@@ -2,7 +2,10 @@
 
 """
 Author: banhao@gmail.com
-Version: 4.8.2
+Version: 4.8.3
+
+Issue Date: June 04,2021
+Release Note: Dynamic reload "variable", any changes in variable.py no need to restart the program to reload.
 
 Issue Date: May 31,2021
 Release Note: Add "skip_indicator_profit_rate" parameter that can sell bypass the indicator conditions.
@@ -43,6 +46,8 @@ from ta import add_all_ta_features
 from ta.utils import dropna
 from pandas import DataFrame
 from math import isnan
+from importlib import reload
+import variable
 from variable import *
 
 
@@ -753,4 +758,6 @@ while True:
                         print('Available ' + _item + ' is less than the ' + _item + ' Lower Limit for buying ', id, file=open("output.txt", "a"))
     print('--------------------------------------------------------------------------------------------------------------------------------------------', file=open("output.txt", "a"))
     cancel_order()
+    reload(variable)
+    from variable import *
 
