@@ -136,4 +136,6 @@ if (( float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simu
 ## 支持本项目
 如果你觉得本程序能帮助你在加密货币市场中挣到钱，如能通过下面的链接帮我买一杯咖啡，我将非常感谢！
 
+<a href="https://www.buymeacoffee.com/haoban" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+
 [PayPal.Me](https://paypal.me/HAOBAN99?locale.x=en_US)
