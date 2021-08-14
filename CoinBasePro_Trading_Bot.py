@@ -2,7 +2,10 @@
 
 """
 Author: banhao@gmail.com
-Version: 4.8.3
+Version: 4.8.4
+
+Issue Date: August 14,2021
+Release Note: Add "skip_buy_currency" parameter to bypass the currencies that without enough history data which cause the indicators error.
 
 Issue Date: June 04,2021
 Release Note: Dynamic reload "variable", any changes in variable.py no need to restart the program to reload.
@@ -218,7 +221,7 @@ def get_current_property():
 
 
 def min_max_price(Long_Term_Indicator_days, id):
-    global min_max_list
+    global min_max_list, skip_buy_currency
     low_price_list = []
     high_price_list = []
     sell_sign_list = []
@@ -240,6 +243,10 @@ def min_max_price(Long_Term_Indicator_days, id):
         sell_signal = True
     min_max_list.append([id, len(regress_history_data_price.json()), datetime.utcfromtimestamp(high_price_list[max_index][0]).__format__('%Y-%m-%d %H:%M:%S'), max_value, datetime.utcfromtimestamp(low_price_list[min_index][0]).__format__('%Y-%m-%d %H:%M:%S'), min_value, sell_signal])    
     print('%10s' % id," | ", '%4s' % len(regress_history_data_price.json())," | highest price date:",datetime.utcfromtimestamp(high_price_list[max_index][0]).__format__('%Y-%m-%d %H:%M:%S')," | ", '%12s' % format(max_value, '.6f')," | lowest price date:", datetime.utcfromtimestamp(low_price_list[min_index][0]).__format__('%Y-%m-%d %H:%M:%S')," | ", '%12s' % format(min_value, '.6f'), file=open("output.txt", "a"))
+    if len(regress_history_data_price.json()) < min_history_data:
+        skip_buy_currency = True
+    else:
+        skip_buy_currency = False
 
 
 def Short_Term_Indicator(Short_Term_Indicator_days, id):
@@ -573,8 +580,8 @@ def buy_currency(id, currency, available_balance):
     if not in_hold_list:
         Short_Term_Indicator(Short_Term_Indicator_days, id)
         Long_Term_Indicator(Long_Term_Indicator_days, id)
-        if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100 and long_term_simulation_data['Low'].iloc[-1] < long_term_simulation_data['BOLLINGER_LBAND'].iloc[-1]:
-            print("   ---First buy---:", id, file=open("output.txt", "a"))
+        if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -200 and long_term_simulation_data['Low'].iloc[-1] < long_term_simulation_data['BOLLINGER_LBAND'].iloc[-1] and long_term_simulation_data['RSI14'].iloc[-1] < 30:
+            print("   ---First buy---:", id, file=open("order.txt", "a"))
             order_size = int(available_balance*first_buy_percent/last_trade_price*(1/base_min_size))/(1/base_min_size)
             order = {
                     'size': order_size,
@@ -582,12 +589,12 @@ def buy_currency(id, currency, available_balance):
                     'side': 'buy',
                     'product_id': id,
                     }
-            print(order, file=open("output.txt", "a"))
+            print(order, file=open("order.txt", "a"))
             request_order = requests.post(api_url + 'orders', json=order, auth=auth)
             if request_order.status_code != 200:
                 Error(request_order.status_code)
             time.sleep(seconds_pause_request)
-            print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
+            print(json.dumps(request_order.json(), indent=4), file=open("order.txt", "a"))
             time.sleep(seconds_cancel_order)
             available_quote_currency()    
     if in_hold_list:
@@ -623,13 +630,13 @@ def buy_currency(id, currency, available_balance):
                 if order_list[j][1] == 'sell':
                     break
             min_price = min(cost_price)
-        print('%10s' % id, "is in the HOLD LIST", file=open("output.txt", "a"))
-        print('%10s' % id, "Minimun buy price is:", format(min_price, '.6f'), file=open("output.txt", "a"))
+        print('            |_', id , "is in the HOLD LIST", file=open("output.txt", "a"))
+        print('            |_', id , "Minimun buy price is:", format(min_price, '.6f'), file=open("output.txt", "a"))
         if float(last_trade_price) < float(min_price*(1-third_buy_percent)): # when price less than the minimum price third_buy_percent
             Short_Term_Indicator(Short_Term_Indicator_days, id)
             Long_Term_Indicator(Long_Term_Indicator_days, id)
-            if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100:
-                print('%10s' % id, "price is less than the minimum price*", 1-third_buy_percent, file=open("output.txt", "a"))
+            if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -300:
+                print('%10s' % id, "price is less than the minimum price*", 1-third_buy_percent, file=open("order.txt", "a"))
                 order_size = int(available_balance*third_buy_percent/last_trade_price*(1/base_min_size))/(1/base_min_size)
                 order = {
                         'size': order_size,
@@ -637,19 +644,19 @@ def buy_currency(id, currency, available_balance):
                         'side': 'buy',
                         'product_id': id,
                         }
-                print(order, file=open("output.txt", "a"))
+                print(order, file=open("order.txt", "a"))
                 request_order = requests.post(api_url + 'orders', json=order, auth=auth)
                 if request_order.status_code != 200:
                     Error(request_order.status_code)
                 time.sleep(seconds_pause_request)
-                print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
+                print(json.dumps(request_order.json(), indent=4), file=open("order.txt", "a"))
                 time.sleep(seconds_cancel_order)
                 available_quote_currency()
         elif float(last_trade_price) < float(min_price*(1-second_buy_percent)): # when price less than the minimum price second_buy_percent
             Short_Term_Indicator(Short_Term_Indicator_days, id)
             Long_Term_Indicator(Long_Term_Indicator_days, id)
-            if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -100:
-                print('%10s' % id, "price is less than the minimum price*", 1-second_buy_percent, file=open("output.txt", "a"))
+            if ((short_term_simulation_data['Close'].iloc[-1] > short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])or (short_term_simulation_data['Close'].iloc[-1] < short_term_simulation_data['Open'].iloc[-1] and short_term_simulation_data['Open'].iloc[-1] < short_term_simulation_data['BOLLINGER_LBAND'].iloc[-1])) and short_term_simulation_data['CCI'].iloc[-1] < -200:
+                print('%10s' % id, "price is less than the minimum price*", 1-second_buy_percent, file=open("order.txt", "a"))
                 order_size = int(available_balance*second_buy_percent/last_trade_price*(1/base_min_size))/(1/base_min_size)
                 order = {
                         'size': order_size,
@@ -657,16 +664,16 @@ def buy_currency(id, currency, available_balance):
                         'side': 'buy',
                         'product_id': id,
                         }
-                print(order, file=open("output.txt", "a"))
+                print(order, file=open("order.txt", "a"))
                 request_order = requests.post(api_url + 'orders', json=order, auth=auth)
                 if request_order.status_code != 200:
                     Error(request_order.status_code)
                 time.sleep(seconds_pause_request)
-                print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
+                print(json.dumps(request_order.json(), indent=4), file=open("order.txt", "a"))
                 time.sleep(seconds_cancel_order)
                 available_quote_currency()
         else:
-            print('%10s' % id, "price is NOT less than the minimum price*",1-second_buy_percent, file=open("output.txt", "a"))
+            print('            |_', id , "price is NOT less than the minimum price*",1-second_buy_percent, file=open("output.txt", "a"))
 
 
 def sell_currency(id, balance):
@@ -689,11 +696,11 @@ def sell_currency(id, balance):
                 'side': 'sell',
                 'product_id': id,
                 }
-        print(order, file=open("output.txt", "a"))
+        print(order, file=open("order.txt", "a"))
         request_order = requests.post(api_url + 'orders', json=order, auth=auth)
         if request_order.status_code != 200:
             Error(request_order.status_code)
-        print(json.dumps(request_order.json(), indent=4), file=open("output.txt", "a"))
+        print(json.dumps(request_order.json(), indent=4), file=open("order.txt", "a"))
         time.sleep(seconds_cancel_order)
 
 
@@ -720,10 +727,11 @@ def cancel_order():
 api_url = 'https://api.pro.coinbase.com/'
 auth = CoinbaseExchangeAuth(api_key, secret_key, passphrase)
 while True:
-    global order_list, products_list, min_max_list, coinbase_products
+    global order_list, products_list, min_max_list, coinbase_products, skip_buy_currency
     order_list = []
     products_list = []
     min_max_list = []
+    skip_buy_currency = False
     current_datetime = requests.get(api_url + 'time', auth=auth)
     if current_datetime.status_code != 200:
         Error(current_datetime.status_code)
@@ -750,12 +758,15 @@ while True:
             id = item['currency'] + "-" + _item
             if id in products_list:
                 min_max_price(Long_Term_Indicator_days,id)
-                for i in range(len(quote_currency_list)):
-                    if (quote_currency_list[i][0] == _item) and (float(quote_currency_list[i][4]) > float(quote_lower_limit[_item])):
-                        available_balance = quote_currency_list[i][3]
-                        buy_currency(id, item['currency'], available_balance)
-                    elif (quote_currency_list[i][0] == _item) and (float(quote_currency_list[i][4]) < float(quote_lower_limit[_item])):
-                        print('Available ' + _item + ' is less than the ' + _item + ' Lower Limit for buying ', id, file=open("output.txt", "a"))
+                if not skip_buy_currency:
+                    for i in range(len(quote_currency_list)):
+                        if (quote_currency_list[i][0] == _item) and (float(quote_currency_list[i][4]) > float(quote_lower_limit[_item])):
+                            available_balance = quote_currency_list[i][3]
+                            buy_currency(id, item['currency'], available_balance)
+                        elif (quote_currency_list[i][0] == _item) and (float(quote_currency_list[i][4]) < float(quote_lower_limit[_item])):
+                            print('            |_ Available ' + _item + ' is less than the ' + _item + ' Lower Limit for buying ', id, file=open("output.txt", "a"))
+                else:
+                    print('            |_', id , ' history data is less than 30 days, skip the buy currency module.', file=open("output.txt", "a"))
     print('--------------------------------------------------------------------------------------------------------------------------------------------', file=open("output.txt", "a"))
     cancel_order()
     reload(variable)
