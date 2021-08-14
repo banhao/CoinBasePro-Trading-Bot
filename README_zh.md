@@ -71,8 +71,9 @@ quote_lower_limit = {'BTC':100, 'USDC':100, 'ETH':10, 'USDT':10}
 exclude_currency = ["XRP-BTC","DAI-USDC","WBTC-BTC"] # "exclude_currency" and "include_currency" only one can have items or both empty
 include_currency = [] # "exclude_currency" and "include_currency" only one can have items or both empty
 output_data_file = 'output_data.txt'
-close_plot_second = 0 # "0" will not show the plot, just use for generate data
+close_plot_second = 5 # "0" will not show the plot, just use for generate data
 order_start_date = '2021-02-01'
+min_history_data = 30 # new cryptocurrency involved into CoinBase without enoough data may cause the indicators error. use this parameter to skip those new cryptocurrencies.
 ```
 
 -  api_key - 请填入你自己的 CoinBase Pro API key.
@@ -98,7 +99,7 @@ order_start_date = '2021-02-01'
 -  output_data_file - 数据输出文件，该参数只被用在本人的另外一个程序中 [CoinBasePro Trading Simulator](https://github.com/banhao/CoinBasePro-Trading-Simulator)。
 -  close_plot_second - 该参数只被用在本人的另外一个程序中 [CoinBasePro Trading Simulator](https://github.com/banhao/CoinBasePro-Trading-Simulator).
 -  order_start_date - 获取历史交易开始时间。长时间交易后会形成很长的交易记录，本程序根据交易记录自动生成成本价格，如果交易历史记录过长会导致程序计算时间变长，通过该参数可以屏蔽掉太久远的交易记录。
-
+-  min_history_data - 新引入的加密货币由于缺少足够的历史数据，会引发指标出现错误。该参数设置默认为30天，确保新引入的加密货币有足够天数的数据后可正常生成各个技术指标。
 
 ## 买入条件
 
