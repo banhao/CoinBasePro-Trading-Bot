@@ -71,8 +71,9 @@ quote_lower_limit = {'BTC':100, 'USDC':100, 'ETH':10, 'USDT':10}
 exclude_currency = ["XRP-BTC","DAI-USDC","WBTC-BTC"] # "exclude_currency" and "include_currency" only one can have items or both empty
 include_currency = [] # "exclude_currency" and "include_currency" only one can have items or both empty
 output_data_file = 'output_data.txt'
-close_plot_second = 0 # "0" will not show the plot, just use for generate data
+close_plot_second = 5 # "0" will not show the plot, just use for generate data
 order_start_date = '2021-02-01'
+min_history_data = 30 # new cryptocurrency involved into CoinBase without enoough data may cause the indicators error. use this parameter to skip those new cryptocurrencies.
 ```
 
 -  api_key - CoinBase Pro API key generated in the CoinBase Pro API SETTINGS page. Recommend to only generate "View/Trade" permissions API KEY and use the "IP Whitelist" to block all unauthorised access.
@@ -98,7 +99,7 @@ order_start_date = '2021-02-01'
 -  output_data_file - only used for [CoinBasePro Trading Simulator](https://github.com/banhao/CoinBasePro-Trading-Simulator). Export indicators into this file.
 -  close_plot_second - only used for [CoinBasePro Trading Simulator](https://github.com/banhao/CoinBasePro-Trading-Simulator).
 -  order_start_date - The start date you want the program to grab history orders.
-
+-  min_history_data - New cryptocurrency involved into CoinBase without enoough data may cause the indicators error. use this parameter to skip those new cryptocurrencies.
 
 ## Buy Condition
 -  First Buy
