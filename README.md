@@ -1,6 +1,8 @@
 # **WARNING! This software will not be maintained any more. So please be very careful if you want to use it on CoinBase or CoinBase Pro.**
 # **CoinBase is very very very sucks.! Don't use their service, because you will never get any reply from a people, and they will never resolve your issue.**
 ========================================================================================
+I'm developing a new program which will work on Binance.
+
 <!--
 # CoinBasePro Trading Bot
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
