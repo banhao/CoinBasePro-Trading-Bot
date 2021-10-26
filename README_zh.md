@@ -1,3 +1,9 @@
+# **警告！此软件将不再维护。所以，如果你想在CoinBase或CoinBase Pro使用它，请非常小心。**
+# **CoinBase是非常非常糟糕的！请不要使用他们的服务，因为你永远不会得到任何人的答复，并且他们永远都无法解决你的问题。**
+========================================================================================
+目前我正在开发一个新的基于Binance的程序。
+
+<!--
 # CoinBasePro Trading Bot
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 
@@ -140,3 +146,4 @@ if (( float(last_trade_price) > currency_cost[0]*profit_rate and short_term_simu
 <a href="https://www.buymeacoffee.com/haoban" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 [PayPal.Me](https://paypal.me/HAOBAN99?locale.x=en_US)
+-->
