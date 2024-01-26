@@ -1,9 +1,6 @@
 # **WARNING! This software will not be maintained any more. So please be very careful if you want to use it on CoinBase or CoinBase Pro.**
 # **THIS IS THE FINAL VERSION 5.7**
 =========================================================================
-
-The new Binance Bot is here: https://twitter.com/CC_Tradingchart
-
 <!--
 # CoinBasePro Trading Bot
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
